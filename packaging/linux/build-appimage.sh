@@ -44,19 +44,22 @@ chmod +x "$APPDIR/AppRun"
 
 echo "==> AppDir successfully prepared at $APPDIR"
 
-# Check if appimagetool exists or download if in CI
-APPIMAGETOOL=""
-if command -v appimagetool >/dev/null 2>&1; then
-  APPIMAGETOOL="appimagetool"
-elif [ -f "$ROOT_DIR/build/appimagetool" ]; then
-  APPIMAGETOOL="$ROOT_DIR/build/appimagetool"
+# Locate or download appimagetool
+TOOL_CMD=""
+if [ -f "$ROOT_DIR/build/squashfs-root/AppRun" ]; then
+  TOOL_CMD="$ROOT_DIR/build/squashfs-root/AppRun"
+elif command -v appimagetool >/dev/null 2>&1; then
+  TOOL_CMD="appimagetool"
+else
+  echo "==> Downloading appimagetool..."
+  mkdir -p "$ROOT_DIR/build"
+  curl -sSL "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" -o "$ROOT_DIR/build/appimagetool"
+  chmod +x "$ROOT_DIR/build/appimagetool"
+  (cd "$ROOT_DIR/build" && ./appimagetool --appimage-extract >/dev/null 2>&1)
+  TOOL_CMD="$ROOT_DIR/build/squashfs-root/AppRun"
 fi
 
-if [ -n "$APPIMAGETOOL" ]; then
-  echo "==> Generating AppImage with $APPIMAGETOOL..."
-  ARCH=x86_64 "$APPIMAGETOOL" "$APPDIR" "$DIST_DIR/Fblocker-linux-x86_64.AppImage"
-  chmod +x "$DIST_DIR/Fblocker-linux-x86_64.AppImage"
-  echo "==> Successfully created $DIST_DIR/Fblocker-linux-x86_64.AppImage"
-else
-  echo "Notice: appimagetool not found on host. In GitHub Actions, appimagetool is automatically downloaded to produce Fblocker-linux-x86_64.AppImage."
-fi
+echo "==> Generating AppImage with $TOOL_CMD..."
+ARCH=x86_64 "$TOOL_CMD" "$APPDIR" "$DIST_DIR/Fblocker-linux-x86_64.AppImage"
+chmod +x "$DIST_DIR/Fblocker-linux-x86_64.AppImage"
+echo "==> Successfully created $DIST_DIR/Fblocker-linux-x86_64.AppImage"
