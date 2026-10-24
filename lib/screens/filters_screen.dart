@@ -136,14 +136,57 @@ class _FiltersScreenState extends State<FiltersScreen> {
                     ),
                   ],
                 ),
-                ElevatedButton.icon(
-                  onPressed: () => _showAddFilterDialog(context),
-                  icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Liste Ekle'),
+                Row(
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: widget.service.isUpdatingFilters ? null : widget.service.updateOnlineFilterLists,
+                      icon: widget.service.isUpdatingFilters
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: FinoraColors.white),
+                            )
+                          : const Icon(Icons.cloud_download_outlined, size: 16),
+                      label: Text(widget.service.isUpdatingFilters ? 'İndiriliyor...' : 'OTA Güncelle'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: FinoraColors.white,
+                        side: const BorderSide(color: FinoraColors.borderLight),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: () => _showAddFilterDialog(context),
+                      icon: const Icon(Icons.add, size: 16),
+                      label: const Text('Liste Ekle'),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
+          if (widget.service.filterUpdateStatus.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: FinoraColors.card,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: FinoraColors.border),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline, size: 16, color: FinoraColors.red),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      widget.service.filterUpdateStatus,
+                      style: const TextStyle(color: FinoraColors.textSecondary, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 20),
 
           const Text(

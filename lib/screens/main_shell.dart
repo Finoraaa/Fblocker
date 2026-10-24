@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/blocker_service.dart';
+import '../services/ota_service.dart';
 import '../theme/finora_theme.dart';
 import '../widgets/finora_header.dart';
 import 'dashboard_screen.dart';
@@ -10,10 +11,12 @@ import 'settings_screen.dart';
 
 class MainShell extends StatefulWidget {
   final BlockerService service;
+  final OtaService otaService;
 
   const MainShell({
     super.key,
     required this.service,
+    required this.otaService,
   });
 
   @override
@@ -26,19 +29,23 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: widget.service,
+      animation: Listenable.merge([widget.service, widget.otaService]),
       builder: (context, _) {
         final isWide = MediaQuery.of(context).size.width >= 750;
 
         final screens = [
           DashboardScreen(
             service: widget.service,
+            otaService: widget.otaService,
             onNavigateToLogs: () => setState(() => _selectedIndex = 1),
           ),
           LogsScreen(service: widget.service),
           FiltersScreen(service: widget.service),
           RulesScreen(service: widget.service),
-          SettingsScreen(service: widget.service),
+          SettingsScreen(
+            service: widget.service,
+            otaService: widget.otaService,
+          ),
         ];
 
         return Scaffold(

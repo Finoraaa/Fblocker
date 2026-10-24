@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screens/main_shell.dart';
 import 'services/blocker_service.dart';
+import 'services/ota_service.dart';
 import 'theme/finora_theme.dart';
 
 void main() async {
@@ -18,16 +19,22 @@ void main() async {
   );
 
   final blockerService = BlockerService();
+  final otaService = OtaService();
 
-  runApp(FinoraApp(service: blockerService));
+  // Check for updates in background on launch
+  otaService.checkForUpdates();
+
+  runApp(FinoraApp(service: blockerService, otaService: otaService));
 }
 
 class FinoraApp extends StatelessWidget {
   final BlockerService service;
+  final OtaService otaService;
 
   const FinoraApp({
     super.key,
     required this.service,
+    required this.otaService,
   });
 
   @override
@@ -36,7 +43,10 @@ class FinoraApp extends StatelessWidget {
       title: 'Finora Fblocker',
       debugShowCheckedModeBanner: false,
       theme: FinoraTheme.darkTheme,
-      home: MainShell(service: service),
+      home: MainShell(
+        service: service,
+        otaService: otaService,
+      ),
     );
   }
 }
