@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Finora Fblocker
+GenericName=Ad and Tracker Blocker
+Comment=Finora Cyber Ad & Tracker Blocker
+Exec=fblocker %u
+Icon=fblocker
+Terminal=false
+Categories=Network;Security;Utility;
+Keywords=adblocker;tracker;privacy;finora;security;
+StartupWMClass=fblocker
